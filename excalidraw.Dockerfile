@@ -13,11 +13,16 @@ RUN yarn --network-timeout 600000
 ARG VITE_APP_WS_SERVER_URL
 ENV VITE_APP_WS_SERVER_URL=$VITE_APP_WS_SERVER_URL
 
-# Verify the variable is actually there during build
-RUN echo "THE WS SERVER URL IS: $VITE_APP_WS_SERVER_URL"
+# DEBUG: Verify the variable is actually there during build
+RUN echo "=========================================" && \
+    echo "THE WS SERVER URL IS: $VITE_APP_WS_SERVER_URL" && \
+    echo "========================================="
 
 # Build the app - Vite will now "bake" the URL into the JS files
 RUN yarn build:app:docker
+
+# DEBUG: Check if the URL is in the built files
+RUN grep -r "excalidraw-room" /app/excalidraw-app/build || echo "URL NOT FOUND IN BUILD!"
 
 # Production image
 FROM nginx:1.27-alpine
