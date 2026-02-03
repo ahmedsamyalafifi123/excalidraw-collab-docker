@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   excalidraw:
     build:
@@ -8,6 +7,11 @@ services:
       args:
         VITE_APP_WS_SERVER_URL: ${VITE_APP_WS_SERVER_URL}
         CACHE_INVALIDATOR: ${CACHE_INVALIDATOR}
+      # Add this to force rebuild when CACHE_INVALIDATOR changes
+      cache_from:
+        - type=local,src=/tmp/.buildx-cache
+      cache_to:
+        - type=local,dest=/tmp/.buildx-cache-new,mode=max
     ports:
       - "${FRONTEND_PORT:-8080}:80"
     labels:
@@ -16,7 +20,7 @@ services:
       - "traefik.http.routers.excalidraw.entrypoints=websecure"
       - "traefik.http.routers.excalidraw.tls=true"
       - "traefik.http.services.excalidraw.loadbalancer.server.port=80"
-
+  
   collab:
     image: excalidraw/excalidraw-room
     ports:
@@ -26,5 +30,4 @@ services:
       - "traefik.http.routers.collab.rule=Host(`${COLLAB_DOMAIN}`)"
       - "traefik.http.routers.collab.entrypoints=websecure"
       - "traefik.http.routers.collab.tls=true"
-      # ADD THIS LINE to ensure the socket stays open
-      - "traefik.http.middlewares.collab-upgrade.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.services.collab.loadbalancer.server.port=80"
