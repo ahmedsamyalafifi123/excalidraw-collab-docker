@@ -1,6 +1,11 @@
 # excalidraw.Dockerfile
+# 1. Start with Node 20 (as we fixed before)
 FROM node:20-alpine AS build
 
+# 2. Install git (This is the missing step!)
+RUN apk add --no-cache git
+
+# 3. Now the rest of your file can run
 WORKDIR /app
 
 ARG CACHE_INVALIDATOR
