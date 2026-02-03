@@ -9,17 +9,14 @@ RUN git clone --depth 1 https://github.com/excalidraw/excalidraw.git .
 # Install dependencies
 RUN yarn --network-timeout 600000
 
-# SET THE VARIABLES RIGHT BEFORE THE BUILD
+# THESE MUST BE DEFINED AS ARGS AND THEN ENV RIGHT BEFORE THE BUILD
 ARG VITE_APP_WS_SERVER_URL
-ARG CACHE_INVALIDATOR
-
-# We force them into the environment so Vite picks them up
 ENV VITE_APP_WS_SERVER_URL=$VITE_APP_WS_SERVER_URL
-ENV VITE_APP_STORAGE_BACKEND=https
 
-RUN echo "Building with WS: $VITE_APP_WS_SERVER_URL"
+# Verify the variable is actually there during build
+RUN echo "THE WS SERVER URL IS: $VITE_APP_WS_SERVER_URL"
 
-# Build the app
+# Build the app - Vite will now "bake" the URL into the JS files
 RUN yarn build:app:docker
 
 # Production image
